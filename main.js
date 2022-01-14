@@ -49,17 +49,14 @@ function Spot(i,j){
         var i = this.i
         var j = this.j
 
-        if (i < cols-1)
-            this.neighbors.push(grid[i+1][j])
-        
-        if (i > 0)
-            this.neighbors.push(grid[i-1][j])
-        
-        if(j < rows - 1)
-            this.neighbors.push(grid[i][j+1])
-        
-        if(j > 0)    
-            this.neighbors.push(grid[i][j-1])
+        if (i < cols-1) this.neighbors.push(grid[i+1][j])
+        if (i > 0) this.neighbors.push(grid[i-1][j])
+        if(j < rows - 1) this.neighbors.push(grid[i][j+1])
+        if(j > 0) this.neighbors.push(grid[i][j-1])
+        if(i > 0 && j > 0) this.neighbors.push(grid[i-1][j-1])
+        if(i < cols -1 && j > 0) this.neighbors.push(grid[i+1][j-1])
+        if(i > 0 && j < rows - 1) this.neighbors.push(grid[i-1][j+1])
+        if(i < cols -1 && j < rows - 1) this.neighbors.push(grid[i+1][j+1])
     }
 }
 
@@ -169,7 +166,13 @@ function astar(){
 }
 
 function draw(){
-    
+    background(0)
+    for(let i = 0; i < cols; i++){
+        for(let j = 0; j < rows; j++){
+            grid[i][j].show(null)
+        }
+    }
+
     if(tryClicked > 1){
         astar()
         for(let i = 0; i < closedSet.length;i++){
@@ -183,11 +186,5 @@ function draw(){
         }
     }
 
-    background(0)
     
-    for(let i = 0; i < cols; i++){
-        for(let j = 0; j < rows; j++){
-            grid[i][j].show(null)
-        }
-    }
 }
