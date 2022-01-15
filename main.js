@@ -1,12 +1,12 @@
 
 
-var cols = 20
+var cols = 40
 var rows = 20
 
 var w = 0
 var h = 0
 
-var width = 800
+var width = 1600
 var height = 800
 
 var grid = new Array(cols)
@@ -30,7 +30,7 @@ function Spot(i,j){
     this.g = 0
     this.h = 0
     
-    this.wall
+    this.wall = false
 
     this.neighbors = []
     this.previous = undefined
@@ -73,27 +73,27 @@ function removeFromArray(arr, del){
 }
 
 function mousePressed(){
-    console.log(Math.floor(mouseX/h) + "   " + Math.floor(mouseY/w))
-    let tempI = Math.floor(mouseX/h)
-    let tempJ = Math.floor(mouseY/w)
+    if(tryClicked < 2){
 
-    if(tryClicked === 0){
-        start = grid[tempI][tempJ]
-        openSet.push(start)
-        grid[tempI][tempJ].show(color(0, 255, 0))
-        tryClicked++
-        console.log(start)
-
-    }else if(tryClicked === 1){
-        end = grid[tempI][tempJ]
-        grid[tempI][tempJ].show(color(255, 0, 0))
-        tryClicked++
-        console.log(end)
+        console.log(Math.floor(mouseX/h) + "   " + Math.floor(mouseY/w))
+        let tempI = Math.floor(mouseX/h)
+        let tempJ = Math.floor(mouseY/w)
+        
+        if(tryClicked === 0){
+            start = grid[tempI][tempJ]
+            openSet.push(start)
+            grid[tempI][tempJ].show(color(0, 255, 0))
+            tryClicked++
+        }else if(tryClicked === 1){
+            end = grid[tempI][tempJ]
+            grid[tempI][tempJ].show(color(255, 0, 0))
+            tryClicked++
+        }
     }
 }
 
 function setup(){
-    createCanvas(800,800)
+    createCanvas(1600,800)
     w = width / cols
     h = height / rows
 
@@ -169,7 +169,12 @@ function draw(){
     background(0)
     for(let i = 0; i < cols; i++){
         for(let j = 0; j < rows; j++){
-            grid[i][j].show(null)
+            if(i == cols / 2 && j > 3){
+                grid[i][j].wall = true 
+                grid[i][j].show(0)
+            }else{
+                grid[i][j].show(null)
+            }
         }
     }
 
