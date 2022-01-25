@@ -1,7 +1,7 @@
 
 
-var cols = 40
-var rows = 20
+var cols = 60
+var rows = 30
 
 var w = 0
 var h = 0
@@ -12,7 +12,7 @@ var height = 800
 var grid = new Array(cols)
 
 // edit here to generate another wall on map on 
-var wallIdx = 12
+var wallIdx = 18
 var midWallIdx = Math.floor(wallIdx / 2)
 
 var openSet = []
@@ -177,7 +177,7 @@ function draw(){
                 grid[i][j].wall = true 
                 grid[i][j].show(0)
             }
-            else if((i+1) % wallIdx == midWallIdx && j < 15){
+            else if((i+1) % wallIdx == midWallIdx && j < rows - 5){
                 grid[i][j].wall = true 
                 grid[i][j].show(0)
             }
