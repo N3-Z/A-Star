@@ -1,15 +1,13 @@
 
 
-var cols = 60
-var rows = 30
+var cols
+var rows
+var cellSize = 26
 
 var w = 0
 var h = 0
 
-var width = 1600
-var height = 800
-
-var grid = new Array(cols)
+var grid
 
 // edit here to generate another wall on map on 
 var wallIdx = 18
@@ -76,47 +74,115 @@ function removeFromArray(arr, del){
     }
 }
 
+function generateWalls(){
+    resetPathfinding()
+    for(let i = 0; i < cols; i++){
+        for(let j = 0; j < rows; j++){
+            grid[i][j].wall = false
+            grid[i][j].col = 255
+        }
+    }
+    for(let i = 0; i < cols; i++){
+        for(let j = 0; j < rows; j++){
+            if(random() < 0.3 && !(i > 0 && grid[i-1][j].wall)){
+                grid[i][j].wall = true
+            }
+        }
+    }
+}
+
+function resetSimulation(){
+    resetPathfinding()
+    for(let i = 0; i < cols; i++){
+        for(let j = 0; j < rows; j++){
+            grid[i][j].wall = false
+            grid[i][j].col = 255
+        }
+    }
+}
+
+function resetPathfinding(){
+    openSet = []
+    closedSet = []
+    path = []
+    start = undefined
+    end = undefined
+    tryClicked = 0
+    for(let i = 0; i < cols; i++){
+        for(let j = 0; j < rows; j++){
+            grid[i][j].previous = undefined
+            grid[i][j].f = 0
+            grid[i][j].g = 0
+            grid[i][j].h = 0
+        }
+    }
+    loop()
+}
+
 function mousePressed(){
     if(tryClicked < 2){
 
         console.log(Math.floor(mouseX/h) + "   " + Math.floor(mouseY/w))
         let tempI = Math.floor(mouseX/h)
         let tempJ = Math.floor(mouseY/w)
+
+        if(tempI < 0 || tempI >= cols || tempJ < 0 || tempJ >= rows) return
+        if(grid[tempI][tempJ].wall) return
         
         if(tryClicked === 0){
             start = grid[tempI][tempJ]
             openSet.push(start)
-            grid[tempI][tempJ].show(color(0, 255, 0))
+            grid[tempI][tempJ].show(color(255, 255, 0))
             tryClicked++
         }else if(tryClicked === 1){
             end = grid[tempI][tempJ]
-            grid[tempI][tempJ].show(color(255, 0, 0))
+            grid[tempI][tempJ].show(color(255, 165, 0))
             tryClicked++
         }
     }
 }
 
-function setup(){
-    createCanvas(1600,800)
-    w = width / cols
-    h = height / rows
+function calcGridDimensions(){
+    let maxW = windowWidth - 40
+    let maxH = windowHeight - 160
+    cols = Math.floor(maxW / cellSize)
+    rows = Math.floor(maxH / cellSize)
+    cols = Math.max(cols, 10)
+    rows = Math.max(rows, 10)
+}
 
+function buildGrid(){
+    grid = new Array(cols)
     for(let i = 0; i < cols; i++){
         grid[i] = new Array(rows)
     }
-
     for(let i = 0; i < cols; i++){
         for(let j = 0; j < rows; j++){
             grid[i][j] = new Spot(i,j)
         }
     }
-
     for(let i = 0; i < cols; i++){
         for(let j = 0; j < rows; j++){
             grid[i][j].addNeighbors(grid)
         }
     }
-    console.log(grid)
+    resetPathfinding()
+}
+
+function setup(){
+    calcGridDimensions()
+    createCanvas(cols * cellSize, rows * cellSize)
+    w = cellSize
+    h = cellSize
+    buildGrid()
+}
+
+function windowResized(){
+    calcGridDimensions()
+    resizeCanvas(cols * cellSize, rows * cellSize)
+    w = cellSize
+    h = cellSize
+    buildGrid()
 }
 
 
@@ -173,15 +239,9 @@ function draw(){
     background(0)
     for(let i = 0; i < cols; i++){
         for(let j = 0; j < rows; j++){
-            if((i+1) % wallIdx == 0 && j > 5){
-                grid[i][j].wall = true 
+            if(grid[i][j].wall){
                 grid[i][j].show(0)
-            }
-            else if((i+1) % wallIdx == midWallIdx && j < rows - 5){
-                grid[i][j].wall = true 
-                grid[i][j].show(0)
-            }
-            else{
+            } else {
                 grid[i][j].show(null)
             }
         }
@@ -200,5 +260,6 @@ function draw(){
         }
     }
 
-    
+    if(start) start.show(color(255, 255, 0))
+    if(end) end.show(color(255, 165, 0))
 }
